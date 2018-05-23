@@ -159,6 +159,62 @@ var (
 		Name:      "policy_l7_received_total",
 		Help:      "Number of total L7 received requests/responses",
 	})
+
+	// L3-L4 statistics
+
+	// DropCountPerReason is a total drop requests,
+	// tagged by drop reason
+	DropCountPerReason = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Namespace: Namespace,
+		Name:      "drop_counts_per_reason",
+		Help:      "Total drop requests, tagged by drop reason",
+	},
+		[]string{"reason"})
+
+	// DropCountPerDirection is a count of the total drop requests,
+	// tagged by ingress/egress direction
+	DropCountPerDirection = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Namespace: Namespace,
+		Name:      "drop_counts_per_direction",
+		Help:      "Total drop requests, tagged by ingress/egress direction",
+	},
+		[]string{"direction"})
+
+	// ForwardCountPerDirection is a count of the total forward requests,
+	// tagged by ingress/egress direction
+	ForwardCountPerDirection = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Namespace: Namespace,
+		Name:      "forward_counts",
+		Help:      "Total forward requests, tagged by ingress/egress direction",
+	},
+		[]string{"direction"})
+
+	// DropBytesPerReason is the total number of
+	// dropped bytes, tagged by tagged by drop reason
+	DropBytesPerReason = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Namespace: Namespace,
+		Name:      "drop_bytes_per_reason",
+		Help:      "Total dropped bytes, tagged by drop reason",
+	},
+		[]string{"reason"})
+
+	// DropCountPerDirection is the total number of
+	// dropped bytes, tagged by ingress/egress direction
+	DropBytesPerDirection = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Namespace: Namespace,
+		Name:      "drop_bytes_per_direction",
+		Help:      "Total dropped bytes, tagged by ingress/egress direction",
+	},
+		[]string{"direction"})
+
+	// ForwardBytesPerDirection is a total number of forwarded bytes,
+	// tagged by ingress/egress direction
+	ForwardBytesPerDirection = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Namespace: Namespace,
+		Name:      "forward_bytes",
+		Help:      "Total forwarded bytes, tagged by ingress/egress direction",
+	},
+		[]string{"direction"})
 )
 
 func init() {
@@ -181,6 +237,13 @@ func init() {
 	MustRegister(ProxyForwarded)
 	MustRegister(ProxyDenied)
 	MustRegister(ProxyReceived)
+
+	MustRegister(DropCountPerReason)
+	MustRegister(DropCountPerDirection)
+	MustRegister(ForwardCountPerDirection)
+	MustRegister(DropBytesPerReason)
+	MustRegister(DropBytesPerDirection)
+	MustRegister(ForwardBytesPerDirection)
 }
 
 // MustRegister adds the collector to the registry, exposing this metric to
