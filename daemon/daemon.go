@@ -56,6 +56,7 @@ import (
 	ipcachemap "github.com/cilium/cilium/pkg/maps/ipcache"
 	"github.com/cilium/cilium/pkg/maps/lbmap"
 	"github.com/cilium/cilium/pkg/maps/lxcmap"
+	"github.com/cilium/cilium/pkg/maps/metricsmap"
 	"github.com/cilium/cilium/pkg/maps/policymap"
 	"github.com/cilium/cilium/pkg/maps/proxymap"
 	"github.com/cilium/cilium/pkg/maps/tunnel"
@@ -69,7 +70,6 @@ import (
 	"github.com/cilium/cilium/pkg/workloads"
 	"github.com/cilium/cilium/pkg/workloads/containerd"
 
-	"github.com/cilium/cilium/pkg/maps/metricsmap"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/mattn/go-shellwords"
 	"github.com/sirupsen/logrus"
@@ -844,6 +844,14 @@ func (d *Daemon) init() error {
 		controller.NewManager().UpdateController("lxcmap-bpf-host-sync",
 			controller.ControllerParams{
 				DoFunc:      func() error { return d.syncLXCMap() },
+				RunInterval: time.Duration(5) * time.Second,
+			})
+
+		// Start the controller for periodic sync of the metrics map with
+		// the prometheus server.
+		controller.NewManager().UpdateController("metricsmap-bpf-prom-sync",
+			controller.ControllerParams{
+				DoFunc:      func() error { return metricsmap.SyncMetricsMap() },
 				RunInterval: time.Duration(5) * time.Second,
 			})
 
